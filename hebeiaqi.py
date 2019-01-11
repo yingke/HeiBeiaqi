@@ -30,8 +30,7 @@ headerss = {
     'x-flash-version': '32,0,0,101'
 }
 aqiurl='http://121.28.49.85:8080/datas/hour/130000.xml?radn=%f'%(random.random())
-appid = 'd381adaa0588345fbec65b7da695650c'
-restkey = 'ca3ce7f1936e41b6f9fa79c38e666ae5'
+
 def getaqi():
     r = requests.get(url=aqiurl, headers= headerss)
 
