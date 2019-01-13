@@ -65,6 +65,7 @@ def parsexml(xml):
             getarea(city.find('Pointers'))
 
             b =Bmob(appid,restkey)
+            #存入bmob
             print(b.insert('citiys',d).jsonData)
 
 def getpoll(polllist):
@@ -111,6 +112,7 @@ def getarea(Pointerlist):
         poll=getpoll(point.find('Polls'))
         Pointers = dict(Pointers.items()+poll.items())
         b = Bmob(appid, restkey)
+        #存入Bmob
         print(b.insert('Region', Pointers).jsonData)
     return Pointers
 
