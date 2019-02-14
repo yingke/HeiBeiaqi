@@ -55,10 +55,11 @@ def parsexml(xml):
                 'MaxPoll': MaxPoll,
                 'Intro': Intro,
                 'Tips': Tips}
-            sql=(Name, DataTime, AQI, Level, LevelIndex, MaxPoll, Intro, Tips)
-            id = mysqlHelp.adddaycitys(sql)
+            sql = (Name, DataTime, AQI, Level, LevelIndex, MaxPoll, Intro, Tips)
+            str = "INSERT INTO daycitys (CityName ,DataTime ,AQI ,Level ,LevelIndex ,MaxPoll ,Intro ,Tips ) VALUES(%s,%s,%s,%s,%s,%s,%s,%s);"
+            id = mysqlHelp.addcrow(str, sql)
 
-            getarea(id ,city.find('Pointers'))
+            getarea(id, city.find('Pointers'))
 
 def getpoll(polllist):
     global polls
@@ -87,24 +88,8 @@ def getarea(id,Pointerlist):
         CLng = point.find('CLng').text
         CLat = point.find('CLat').text
         sql = (id, Name, DataTime, AQI, Level, LevelIndex, MaxPoll, Intro, Tips, CLng, CLat)
-        mysqlHelp.adddayRegion(sql)
-
-        Pointers = {
-
-            'Name': Name,
-            'DataTime': DataTime,
-            'AQI': AQI,
-            'Level': Level,
-            'LevelIndex': LevelIndex,
-            'MaxPoll': MaxPoll,
-            'Intro': Intro,
-            'Tips': Tips,
-            'CLng': CLng,
-            'CLat': CLat,
-
-        }
-
-    return Pointers
+        str = "INSERT INTO dayregion (cid ,Site,DataTime ,AQI ,Level ,LevelIndex ,MaxPoll ,Intro ,Tips, CLng,CLat ) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+        mysqlHelp.addcrow(str,sql)
 
 
 def aps():

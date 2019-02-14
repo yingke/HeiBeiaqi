@@ -59,7 +59,9 @@ def parsexml(xml):
             O31H = p['O3-1H']
             sql = (Name, DataTime, AQI, Level, Type, LevelIndex, MaxPoll, Intro, Tips,
                    PM25, PM10, SO2, CO, NO2, O38H, O31H)
-            print(mysqlHelp.addcitys(sql))
+            str = "INSERT INTO Citys (CityName ,DataTime ,AQI ,Level ,Type ,LevelIndex ,MaxPoll ,Intro ,Tips,PM25 , PM10 , SO2, CO, NO2 , O38H ,O31H ) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+            mysqlHelp.addcrow(str,sql)
+
             getarea(city.find('Pointers'))
 
 
@@ -98,7 +100,8 @@ def getarea(Pointerlist):
         O38H = p['O3-8H']
         O31H = p['O3-1H']
         sql = (City, Region, Name, DataTime, AQI, Level, LevelIndex, MaxPoll, Intro, Tips, CLng, CLat, PM25, PM10, SO2, CO, NO2, O38H, O31H )
-        mysqlHelp.addRegion(sql)
+        str =  "INSERT INTO Region (CityName ,Region,Site,DataTime ,AQI ,Level ,LevelIndex ,MaxPoll ,Intro ,Tips, CLng,CLat,PM25 , PM10 , SO2, CO, NO2 , O38H ,O31H ) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+        mysqlHelp.addcrow(str,sql)
 
 
 def job():
