@@ -1,5 +1,4 @@
 import xml.etree.ElementTree as ET
-import datetime
 import mysqlHelp
 from apscheduler.schedulers.blocking import BlockingScheduler
 import requests
@@ -7,6 +6,7 @@ import random
 from random import choice
 import logging
 logging.basicConfig()
+
 uas = [
     "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:17.0; Baiduspider-ads) Gecko/17.0 Firefox/17.0",
     "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9b4) Gecko/2008030317 Firefox/3.0b4",
@@ -27,41 +27,38 @@ headerss = {
     'User-Agent': choice(uas),
     'x-flash-version': '32,0,0,101'
 }
-aqiurl='http://121.28.49.85:8080/datas/hour/130000.xml?radn=%f'%(random.random())
-appid = 'd381adaa0588345fbec65b7da695650c'
-restkey = 'ca3ce7f1936e41b6f9fa79c38e666ae5'
+aqiurl='http://121.28.49.85:8080/datas/day/130000.xml?radn=%f'%(random.random())
+
 def getaqi():
     r = requests.get(url=aqiurl, headers= headerss)
     parsexml(r.text)
 def parsexml(xml):
     root = root = ET.fromstring(xml.encode('utf-8'))
-    # tree = ET.parse('130000.xml')
+    # tree = ET.parse('day.xml')
     # root =  tree.getroot()
     for childs in root.findall('Citys'):
         for city in childs:
             Name = city.find('Name').text
-            DataTime = (('%d' + '-' + city.find('DataTime').text) % datetime.datetime.now().year).replace('/', '-')
+            DataTime = city.find('DataTime').text
             AQI = city.find('AQI').text
             Level = city.find('Level').text
-            Type = city.find('Type').text
             LevelIndex = city.find('LevelIndex').text
             MaxPoll = city.find('MaxPoll').text
             Intro = city.find('Intro').text
             Tips = city.find('Tips').text
-            pp = city.find('Polls')
-            p = getpoll(pp)
-            PM25 = p['Pm25']
-            PM10 = p['PM10']
-            SO2 = p['SO2']
-            CO = p['CO']
-            NO2 = p['NO2']
-            O38H = p['O3-8H']
-            O31H = p['O3-1H']
-            sql = (Name, DataTime, AQI, Level, Type, LevelIndex, MaxPoll, Intro, Tips,
-                   PM25, PM10, SO2, CO, NO2, O38H, O31H)
-            print(mysqlHelp.addcitys(sql))
-            getarea(city.find('Pointers'))
+            data = {
+                'Name': Name,
+                'DataTime': DataTime,
+                'AQI': AQI,
+                'Level': Level,
+                'LevelIndex': LevelIndex,
+                'MaxPoll': MaxPoll,
+                'Intro': Intro,
+                'Tips': Tips}
+            sql=(Name, DataTime, AQI, Level, LevelIndex, MaxPoll, Intro, Tips)
+            id = mysqlHelp.adddaycitys(sql)
 
+            getarea(id ,city.find('Pointers'))
 
 def getpoll(polllist):
     global polls
@@ -70,17 +67,17 @@ def getpoll(polllist):
         name = poll.find('Name').text
         if 'PM2.5' in name:
             name = 'Pm25'
-        poll1 = {name : poll.find('Value').text}
+        poll1 = {name: poll.find('Value').text, }
         polls.update(poll1)
     return polls
 
-def getarea(Pointerlist):
 
+def getarea(id,Pointerlist):
+    global Pointers
+    Pointers = {}
     for point in Pointerlist:
-        City = point.find('City').text
-        Region = point.find('Region').text
         Name = point.find('Name').text
-        DataTime = (('%d' + '-' + point.find('DataTime').text) % datetime.datetime.now().year).replace('/', '-')
+        DataTime = point.find('DataTime').text
         AQI = point.find('AQI').text
         Level = point.find('Level').text
         LevelIndex = point.find('LevelIndex').text
@@ -89,24 +86,32 @@ def getarea(Pointerlist):
         Tips = point.find('Tips').text
         CLng = point.find('CLng').text
         CLat = point.find('CLat').text
-        p=getpoll(point.find('Polls'))
-        PM25 = p['Pm25']
-        PM10 = p['PM10']
-        SO2 = p['SO2']
-        CO = p['CO']
-        NO2 = p['NO2']
-        O38H = p['O3-8H']
-        O31H = p['O3-1H']
-        sql = (City, Region, Name, DataTime, AQI, Level, LevelIndex, MaxPoll, Intro, Tips, CLng, CLat, PM25, PM10, SO2, CO, NO2, O38H, O31H )
-        mysqlHelp.addRegion(sql)
+        sql = (id, Name, DataTime, AQI, Level, LevelIndex, MaxPoll, Intro, Tips, CLng, CLat)
+        mysqlHelp.adddayRegion(sql)
+
+        Pointers = {
+
+            'Name': Name,
+            'DataTime': DataTime,
+            'AQI': AQI,
+            'Level': Level,
+            'LevelIndex': LevelIndex,
+            'MaxPoll': MaxPoll,
+            'Intro': Intro,
+            'Tips': Tips,
+            'CLng': CLng,
+            'CLat': CLat,
+
+        }
+
+    return Pointers
 
 
-def job():
+def aps():
     sched = BlockingScheduler()
-    sched.add_job(getaqi, 'interval', seconds=3600)
+    sched.add_job(getaqi, 'interval', days=1)
     sched.start()
-    pass
+
 if __name__ == "__main__":
     getaqi()
-    job()
     pass
