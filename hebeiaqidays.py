@@ -6,7 +6,6 @@ import random
 from random import choice
 import logging
 logging.basicConfig()
-
 uas = [
     "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:17.0; Baiduspider-ads) Gecko/17.0 Firefox/17.0",
     "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9b4) Gecko/2008030317 Firefox/3.0b4",
@@ -46,19 +45,9 @@ def parsexml(xml):
             MaxPoll = city.find('MaxPoll').text
             Intro = city.find('Intro').text
             Tips = city.find('Tips').text
-            data = {
-                'Name': Name,
-                'DataTime': DataTime,
-                'AQI': AQI,
-                'Level': Level,
-                'LevelIndex': LevelIndex,
-                'MaxPoll': MaxPoll,
-                'Intro': Intro,
-                'Tips': Tips}
             sql = (Name, DataTime, AQI, Level, LevelIndex, MaxPoll, Intro, Tips)
             str = "INSERT INTO daycitys (CityName ,DataTime ,AQI ,Level ,LevelIndex ,MaxPoll ,Intro ,Tips ) VALUES(%s,%s,%s,%s,%s,%s,%s,%s);"
             id = mysqlHelp.addcrow(str, sql)
-
             getarea(id, city.find('Pointers'))
 
 def getpoll(polllist):
@@ -71,8 +60,6 @@ def getpoll(polllist):
         poll1 = {name: poll.find('Value').text, }
         polls.update(poll1)
     return polls
-
-
 def getarea(id,Pointerlist):
     global Pointers
     Pointers = {}

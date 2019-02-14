@@ -28,8 +28,6 @@ headerss = {
     'x-flash-version': '32,0,0,101'
 }
 aqiurl='http://121.28.49.85:8080/datas/hour/130000.xml?radn=%f'%(random.random())
-appid = 'd381adaa0588345fbec65b7da695650c'
-restkey = 'ca3ce7f1936e41b6f9fa79c38e666ae5'
 def getaqi():
     r = requests.get(url=aqiurl, headers= headerss)
     parsexml(r.text)
@@ -60,7 +58,7 @@ def parsexml(xml):
             sql = (Name, DataTime, AQI, Level, Type, LevelIndex, MaxPoll, Intro, Tips,
                    PM25, PM10, SO2, CO, NO2, O38H, O31H)
             str = "INSERT INTO Citys (CityName ,DataTime ,AQI ,Level ,Type ,LevelIndex ,MaxPoll ,Intro ,Tips,PM25 , PM10 , SO2, CO, NO2 , O38H ,O31H ) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-            mysqlHelp.addcrow(str,sql)
+            mysqlHelp.addcrow(str, sql)
 
             getarea(city.find('Pointers'))
 
