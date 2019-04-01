@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import mysqlHelp
+import index
 from apscheduler.schedulers.blocking import BlockingScheduler
 import requests
 import random
@@ -26,11 +27,13 @@ headerss = {
     'User-Agent': choice(uas),
     'x-flash-version': '32,0,0,101'
 }
-aqiurl='http://121.28.49.85:8080/datas/day/130000.xml?radn=%f'%(random.random())
 
 def getaqi():
+    aqiurl='http://121.28.49.85:8080/datas/day/130000.xml?radn=%f'%(random.random())
     r = requests.get(url=aqiurl, headers= headerss)
     parsexml(r.text)
+
+    index.getday()
 def parsexml(xml):
     root = root = ET.fromstring(xml.encode('utf-8'))
     # tree = ET.parse('day.xml')
@@ -86,4 +89,5 @@ def aps():
 
 if __name__ == "__main__":
     getaqi()
+    aps()
     pass
